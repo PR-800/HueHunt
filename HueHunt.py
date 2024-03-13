@@ -3,18 +3,36 @@ import numpy as np
 import random
 import time
 
-colors = {
+colorsEasy = {
     "blue": (np.array([100, 50, 50]), np.array([130, 255, 255])),
     "green": (np.array([50, 50, 50]), np.array([70, 255, 255])),
     "red": (np.array([0, 100, 100]), np.array([10, 255, 255])),
-    "yellow": (np.array([20, 100, 100]), np.array([30, 255, 255]))
 }
 
-strokeColors = {
+strokeColorsEasy = {
     "blue": (255, 0, 0),    
     "green": (0, 255, 0),   
     "red": (0, 0, 255),     
-    "yellow": (0, 255, 255) 
+}
+
+colorsHard = {
+    "blue": (np.array([100, 50, 50]), np.array([130, 255, 255])),
+    "green": (np.array([50, 50, 50]), np.array([70, 255, 255])),
+    "red": (np.array([0, 100, 100]), np.array([10, 255, 255])),
+    "yellow": (np.array([20, 100, 100]), np.array([30, 255, 255])),
+    "white": (np.array([0, 0, 200]), np.array([180, 50, 255])),
+    "purple": (np.array([140, 50, 50]), np.array([160, 255, 255])),
+    "orange": (np.array([0, 100, 100]), np.array([20, 255, 255]))
+}
+
+strokeColorsHard = {
+    "blue": (255, 0, 0),    
+    "green": (0, 255, 0),   
+    "red": (0, 0, 255),     
+    "yellow": (0, 255, 255),
+    "white": (255, 255, 255),
+    "purple": (128, 0, 128),
+    "orange": (0, 165, 255),
 }
 
 def detectColor(frame, roi, color):
@@ -32,13 +50,18 @@ def detectColor(frame, roi, color):
 
     return roi_mask.any(), area_count
 
-def randomColorAndRoi(prevColor=None):
+def randomColorAndRoi(prevColor, mode):
 
-    availableColors = [color for color in colors.keys() if color != prevColor]
-
-    if availableColors:
-        colorName = random.choice(availableColors)
-        colorRange = colors[colorName]
+    if mode == 'EASY':
+        availableColors = [color for color in colorsEasy.keys() if color != prevColor]
+        if availableColors:
+            colorName = random.choice(availableColors)
+            colorRange = colorsEasy[colorName]
+    elif mode == 'HARD':
+        availableColors = [color for color in colorsHard.keys() if color != prevColor]
+        if availableColors:
+            colorName = random.choice(availableColors)
+            colorRange = colorsHard[colorName]
 
     roi = (random.randint(0, 800 - 350), random.randint(150, 600 - 300), 200, 200) 
 
@@ -71,8 +94,6 @@ def main():
     
     cap = cv2.VideoCapture(0)
 
-    colorName, colorRange, roi = randomColorAndRoi(None)
-
     cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
     cv2.resizeWindow('frame', 800, 600)
 
@@ -81,6 +102,7 @@ def main():
     while not quitGame: 
         startScreen = True
         playingScreen = False
+        gameMode = None
         startGame = None
         startTime = 3
 
@@ -103,7 +125,38 @@ def main():
             if key == ord('q'): 
                 quitGame = True
                 break
-            elif key == ord('s'):
+
+            elif key == ord('s'):  
+                while True:
+                    bg = cv2.imread("bg.jpg")
+                    resizedBG = cv2.resize(bg, (800, 600))
+
+                    cv2.putText(resizedBG, "Choose difficulty", (280, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
+                    
+                    cv2.putText(resizedBG, "Fewer color, Longer timer", (160, 250), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+                    cv2.putText(resizedBG, "EASY", (190, 345), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
+                    cv2.putText(resizedBG, "Press 'e'", (230, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+                    cv2.putText(resizedBG, "to continue with easy mode", (150, 430), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+
+                    cv2.putText(resizedBG, "More color, Shorter timer", (460, 250), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+                    cv2.putText(resizedBG, "HARD", (480, 345), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
+                    cv2.putText(resizedBG, "Press 'h'", (530, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+                    cv2.putText(resizedBG, "to continue with hard mode", (450, 430), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+
+                    cv2.imshow('frame', resizedBG)
+
+                    key = cv2.waitKey(1) & 0xFF
+                    if key == ord('e'): 
+                        gameMode = "EASY"
+                        colorName, colorRange, roi = randomColorAndRoi(None, gameMode)
+                        print("easy mode on")
+                        break
+                    elif key == ord('h'): 
+                        gameMode = "HARD"
+                        colorName, colorRange, roi = randomColorAndRoi(None, gameMode)
+                        print("hard mode on")
+                        break
+                
                 startGame = time.time()
                 while True:
                     diff = int(time.time() - startGame)
@@ -111,7 +164,6 @@ def main():
 
                     bg = cv2.imread("bg.jpg")
                     resizedBG = cv2.resize(bg, (800, 600))
-
                     cv2.putText(resizedBG, "Game will start in", (260, 180), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
                     cv2.putText(resizedBG, f'{remainingTime}', (350, 330), cv2.FONT_HERSHEY_SIMPLEX, 4, (0, 0, 0), 5, cv2.LINE_AA)
                     cv2.putText(resizedBG, "Prepare yourself !", (260, 410), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
@@ -124,7 +176,10 @@ def main():
                 startScreen = False
                 playingScreen = True
                 countdownStart = time.time()    # เก็บเวลา ณ ตอนรันไว้
-                countdownTime = 8 
+                if gameMode == 'EASY':
+                    countdownTime = 8 
+                elif gameMode == 'HARD':
+                    countdownTime = 5 
                 score = 0
                 detect = False
                 over = False
@@ -148,24 +203,34 @@ def main():
                 else:
                     over = True
                 detect = False
-                colorName, colorRange, roi = randomColorAndRoi(colorName)
+                colorName, colorRange, roi = randomColorAndRoi(colorName, gameMode)
                 countdownStart = time.time()
             
             if not over:
 
-                cv2.rectangle(frame, (roi[0], roi[1]), (roi[0]+roi[2], roi[1]+roi[3]), strokeColors[colorName], 2)
-                cv2.putText(frame, f'{colorName.capitalize()}', (roi[0]+10, roi[1]+30), cv2.FONT_HERSHEY_SIMPLEX, 1, strokeColors[colorName], 2, cv2.LINE_AA)
+                if gameMode == 'EASY':
+                    cv2.rectangle(frame, (roi[0], roi[1]), (roi[0]+roi[2], roi[1]+roi[3]), strokeColorsEasy[colorName], 2)
+                    cv2.putText(frame, f'{colorName.capitalize()}', (roi[0]+10, roi[1]+30), cv2.FONT_HERSHEY_SIMPLEX, 1, strokeColorsEasy[colorName], 2, cv2.LINE_AA)
+                    
+                    color_detected, area_count = detectColor(frame, roi, colorRange)
+                    if color_detected and area_count > 0.5:
+                        cv2.rectangle(frame, (roi[0]-10, roi[1]-10), (roi[0]+roi[2]+10, roi[1]+roi[3]+10), strokeColorsEasy[colorName], 2)
+                        detect = True
+                        print(f"Percentage of {colorName}: {area_count}")
+
+                elif gameMode == 'HARD':
+                    cv2.rectangle(frame, (roi[0], roi[1]), (roi[0]+roi[2], roi[1]+roi[3]), strokeColorsHard[colorName], 2)
+                    cv2.putText(frame, f'{colorName.capitalize()}', (roi[0]+10, roi[1]+30), cv2.FONT_HERSHEY_SIMPLEX, 1, strokeColorsHard[colorName], 2, cv2.LINE_AA)
+  
+                    color_detected, area_count = detectColor(frame, roi, colorRange)
+                    if color_detected and area_count > 0.5:
+                        cv2.rectangle(frame, (roi[0]-10, roi[1]-10), (roi[0]+roi[2]+10, roi[1]+roi[3]+10), strokeColorsHard[colorName], 2)
+                        detect = True
+                        print(f"Percentage of {colorName}: {area_count}")
+                
                 cv2.putText(frame, "Time Remaining", (200, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
                 cv2.putText(frame, f'{remainingTime}', (300, 100), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
                 cv2.putText(frame, "Press 'q' to quit game", (250, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
-                
-                # เช็คสีในกล่อง
-                color_detected, area_count = detectColor(frame, roi, colorRange)
-                if color_detected and area_count > 0.5:
-                    cv2.rectangle(frame, (roi[0]-10, roi[1]-10), (roi[0]+roi[2]+10, roi[1]+roi[3]+10), strokeColors[colorName], 2)
-                    detect = True
-
-                    print(f"Percentage of {colorName}: {area_count}")
 
                 cv2.imshow('frame', frame)
             
