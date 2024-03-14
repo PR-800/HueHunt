@@ -94,8 +94,8 @@ def main():
     
     cap = cv2.VideoCapture(0)
 
-    cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
-    cv2.resizeWindow('frame', 800, 600)
+    cv2.namedWindow('HueHunt', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('HueHunt', 800, 600)
 
     quitGame = False
     
@@ -119,7 +119,7 @@ def main():
 
             cv2.putText(resizedBG, "Press 'q' to quit game", (300, 550), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
 
-            cv2.imshow('frame', resizedBG)
+            cv2.imshow('HueHunt', resizedBG)
 
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'): 
@@ -143,7 +143,7 @@ def main():
                     cv2.putText(resizedBG, "Press 'h'", (530, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
                     cv2.putText(resizedBG, "to continue with hard mode", (450, 430), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
 
-                    cv2.imshow('frame', resizedBG)
+                    cv2.imshow('HueHunt', resizedBG)
 
                     key = cv2.waitKey(1) & 0xFF
                     if key == ord('e'): 
@@ -168,7 +168,7 @@ def main():
                     cv2.putText(resizedBG, f'{remainingTime}', (350, 330), cv2.FONT_HERSHEY_SIMPLEX, 4, (0, 0, 0), 5, cv2.LINE_AA)
                     cv2.putText(resizedBG, "Prepare yourself !", (260, 410), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
 
-                    cv2.imshow('frame', resizedBG)
+                    cv2.imshow('HueHunt', resizedBG)
                     cv2.waitKey(1000)  
 
                     if diff >= startTime:
@@ -198,7 +198,7 @@ def main():
                     score += 1
                     cv2.putText(frame, "Well Done !", (150, 100), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
                     cv2.putText(frame, f'Current Score: {score} ', (200, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
-                    cv2.imshow('frame', frame)
+                    cv2.imshow('HueHunt', frame)
                     cv2.waitKey(2000)
                 else:
                     over = True
@@ -232,7 +232,7 @@ def main():
                 cv2.putText(frame, f'{remainingTime}', (300, 100), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
                 cv2.putText(frame, "Press 'q' to quit game", (250, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
 
-                cv2.imshow('frame', frame)
+                cv2.imshow('HueHunt', frame)
             
             if over:
                 bg = cv2.imread("bg.jpg")
@@ -240,7 +240,7 @@ def main():
                 cv2.putText(resizedBG, f'Game Over !', (220, 220), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
                 cv2.putText(resizedBG, f'You got {score}', (320, 280), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
                 cv2.putText(resizedBG, "Try again ? (y/n)", (260, 380), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
-                cv2.imshow('frame', resizedBG)
+                cv2.imshow('HueHunt', resizedBG)
 
                 key = cv2.waitKey(1) & 0xFF
                 if key == ord('y'):
